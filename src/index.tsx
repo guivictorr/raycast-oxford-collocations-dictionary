@@ -16,7 +16,7 @@ export default function Command() {
 
   return (
     <List isShowingDetail={!!html} isLoading={isLoading} throttle onSearchTextChange={setQuery}>
-      {!html && <List.EmptyView icon={{ source: "../assets/oxford.png" }} title="Type to begin search" />}
+      {!html && !query && <List.EmptyView icon={{ source: "../assets/oxford.png" }} title="Type to begin search" />}
 
       {!!html && (
         <>
