@@ -1,24 +1,34 @@
-import { List } from "@raycast/api";
+import { List, Cache } from "@raycast/api";
 import { useFetch } from "@raycast/utils";
-import { useState } from "react";
+import { useDeferredValue, useState } from "react";
 
 import { Collocation, parseHtml } from "./parseHtml";
 
+const cache = new Cache();
+
 export default function Command() {
   const [query, setQuery] = useState("");
-  const url = `https://www.freecollocation.com/search?word=${query}`;
+  const deferredQuery = useDeferredValue(query);
+  const url = `https://www.freecollocation.com/search?word=${deferredQuery}`;
+  const hasCache = cache.has(deferredQuery);
   const { data, isLoading } = useFetch<string>(url, {
-    execute: !!query,
+    execute: !!deferredQuery && !hasCache,
+    onData: (data) => {
+      cache.set(deferredQuery, data);
+    },
   });
 
-  const html = data || "";
-  const result = parseHtml(html);
+  const cachedData = cache.get(deferredQuery);
+
+  const html = cachedData ? cachedData : data;
+  const result = parseHtml(html ?? "");
+  const hasData = !!result?.length;
 
   return (
-    <List isShowingDetail={!!html} isLoading={isLoading} throttle onSearchTextChange={setQuery}>
-      {!html && !query && <List.EmptyView icon={{ source: "../assets/oxford.png" }} title="Type to begin search" />}
+    <List isShowingDetail={hasData} isLoading={isLoading} throttle onSearchTextChange={setQuery}>
+      {!hasData && !query && <List.EmptyView icon={{ source: "../assets/oxford.png" }} title="Type to begin search" />}
 
-      {!!html && (
+      {!!hasData && (
         <>
           {result.map(({ type, collocationGroup }) => (
             <List.Section key={type} title={type}>
