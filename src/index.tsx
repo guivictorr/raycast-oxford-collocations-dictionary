@@ -3,6 +3,7 @@ import { useFetch } from "@raycast/utils";
 import { useDeferredValue, useState } from "react";
 
 import { Collocation, parseHtml } from "./parseHtml";
+import { remapType } from "./remapType";
 
 const cache = new Cache();
 
@@ -46,7 +47,8 @@ export default function Command() {
 function ListItem({ group, type }: { group: Collocation; type: string }) {
   return (
     <List.Item
-      title={group.type}
+      title={remapType(group.type)}
+      accessories={[{ tag: "teste" }]}
       detail={
         <List.Item.Detail
           metadata={
