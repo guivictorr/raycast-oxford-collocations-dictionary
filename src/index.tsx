@@ -4,6 +4,7 @@ import { useDeferredValue, useState } from "react";
 
 import { Collocation, parseHtml } from "./parseHtml";
 import { remapType } from "./remapType";
+import { CollocationList } from "./CollocationList";
 
 const cache = new Cache();
 const URL = "https://www.freecollocation.com/search";
@@ -51,7 +52,8 @@ function ListItem({ group, type, query }: { group: Collocation; type: string; qu
       accessories={[{ tag: group.collocations.length.toString() }]}
       actions={
         <ActionPanel>
-          <Action.OpenInBrowser shortcut={{ modifiers: ["cmd"], key: "o" }} url={`${URL}?word=${query}`} />
+          <Action.Push title="View Collocations as List" target={<CollocationList collocationGroup={group} />} />
+          {/* <Action.OpenInBrowser url={`${URL}?word=${query}`} /> */}
         </ActionPanel>
       }
       detail={
