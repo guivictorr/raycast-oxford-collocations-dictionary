@@ -1,4 +1,4 @@
-import { List, Cache, ActionPanel, Action } from "@raycast/api";
+import { List, Cache, ActionPanel, Action, Icon } from "@raycast/api";
 import { useFetch } from "@raycast/utils";
 import { useDeferredValue, useState } from "react";
 
@@ -27,7 +27,13 @@ export default function Command() {
   const hasData = !!result?.length;
 
   return (
-    <List isShowingDetail={hasData} isLoading={isLoading} throttle onSearchTextChange={setQuery}>
+    <List
+      isShowingDetail={hasData}
+      isLoading={isLoading}
+      searchBarPlaceholder="Search for a word"
+      throttle
+      onSearchTextChange={setQuery}
+    >
       {!hasData && !query && <List.EmptyView icon={{ source: "../assets/oxford.png" }} title="Type to begin search" />}
 
       {!!hasData && (
@@ -52,7 +58,11 @@ function ListItem({ group, type, query }: { group: Collocation; type: string; qu
       accessories={[{ tag: group.collocations.length.toString() }]}
       actions={
         <ActionPanel>
-          <Action.Push title="View Collocations as List" target={<CollocationList collocationGroup={group} />} />
+          <Action.Push
+            title="View Collocations as List"
+            icon={Icon.List}
+            target={<CollocationList collocationGroup={group} />}
+          />
           <Action.OpenInBrowser url={`${URL}?word=${query}`} />
         </ActionPanel>
       }
