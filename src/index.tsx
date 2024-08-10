@@ -1,4 +1,4 @@
-import { List, Cache } from "@raycast/api";
+import { List, Cache, ActionPanel, Action } from "@raycast/api";
 import { useFetch } from "@raycast/utils";
 import { useDeferredValue, useState } from "react";
 
@@ -6,13 +6,13 @@ import { Collocation, parseHtml } from "./parseHtml";
 import { remapType } from "./remapType";
 
 const cache = new Cache();
+const URL = "https://www.freecollocation.com/search";
 
 export default function Command() {
   const [query, setQuery] = useState("");
   const deferredQuery = useDeferredValue(query);
-  const url = `https://www.freecollocation.com/search?word=${deferredQuery}`;
   const hasCache = cache.has(deferredQuery);
-  const { data, isLoading } = useFetch<string>(url, {
+  const { data, isLoading } = useFetch<string>(`${URL}?word=${deferredQuery}`, {
     execute: !!deferredQuery && !hasCache,
     onData: (data) => {
       cache.set(deferredQuery, data);
@@ -34,7 +34,7 @@ export default function Command() {
           {result.map(({ type, collocationGroup }) => (
             <List.Section key={type} title={type}>
               {collocationGroup.map((group) => (
-                <ListItem key={group.id} group={group} type={type} />
+                <ListItem key={group.id} group={group} type={type} query={deferredQuery} />
               ))}
             </List.Section>
           ))}
@@ -44,11 +44,16 @@ export default function Command() {
   );
 }
 
-function ListItem({ group, type }: { group: Collocation; type: string }) {
+function ListItem({ group, type, query }: { group: Collocation; type: string; query: string }) {
   return (
     <List.Item
       title={remapType(group.type)}
-      accessories={[{ tag: "teste" }]}
+      accessories={[{ tag: group.collocations.length.toString() }]}
+      actions={
+        <ActionPanel>
+          <Action.OpenInBrowser shortcut={{ modifiers: ["cmd"], key: "o" }} url={`${URL}?word=${query}`} />
+        </ActionPanel>
+      }
       detail={
         <List.Item.Detail
           metadata={
