@@ -3,7 +3,7 @@ import { useFetch } from "@raycast/utils";
 import { useDeferredValue, useState } from "react";
 
 import { Collocation, parseHtml } from "./parseHtml";
-import { remapType } from "./remapType";
+import { capitalizeWord, remapType } from "./utils";
 import { CollocationList } from "./CollocationList";
 
 const cache = new Cache();
@@ -53,14 +53,14 @@ function ListItem({ group, type, query }: { group: Collocation; type: string; qu
       actions={
         <ActionPanel>
           <Action.Push title="View Collocations as List" target={<CollocationList collocationGroup={group} />} />
-          {/* <Action.OpenInBrowser url={`${URL}?word=${query}`} /> */}
+          <Action.OpenInBrowser url={`${URL}?word=${query}`} />
         </ActionPanel>
       }
       detail={
         <List.Item.Detail
           metadata={
             <List.Item.Detail.Metadata>
-              <List.Item.Detail.Metadata.Label title="Type" text={type} />
+              <List.Item.Detail.Metadata.Label title="Type" text={capitalizeWord(type)} />
               {group.definition && <List.Item.Detail.Metadata.Label title="Definition" text={group.definition} />}
               <List.Item.Detail.Metadata.Separator />
               <List.Item.Detail.Metadata.TagList title="Collocations">
