@@ -1,30 +1,16 @@
-import { List, Cache, ActionPanel, Action, Icon } from "@raycast/api";
-import { useFetch } from "@raycast/utils";
-import { useDeferredValue, useState } from "react";
+import { List, ActionPanel, Action, Icon } from "@raycast/api";
+import { useState } from "react";
 
-import { Collocation, parseHtml } from "./parseHtml";
-import { capitalizeWord, remapType } from "./utils";
+import { Collocation } from "./lib/cheerio";
+import { capitalizeWord, remapType } from "./lib/utils";
 import { CollocationList } from "./CollocationList";
-
-const cache = new Cache();
-const URL = "https://www.freecollocation.com/search";
+import { useCollocations } from "./hooks/useCollocations";
 
 export default function Command() {
   const [query, setQuery] = useState("");
-  const deferredQuery = useDeferredValue(query);
-  const hasCache = cache.has(deferredQuery);
-  const { data, isLoading } = useFetch<string>(`${URL}?word=${deferredQuery}`, {
-    execute: !!deferredQuery && !hasCache,
-    onData: (data) => {
-      cache.set(deferredQuery, data);
-    },
-  });
+  const { collocations, isLoading } = useCollocations(query);
 
-  const cachedData = cache.get(deferredQuery);
-
-  const html = cachedData ? cachedData : data;
-  const result = parseHtml(html ?? "");
-  const hasData = !!result?.length;
+  const hasData = collocations.length > 0;
 
   return (
     <List
@@ -38,10 +24,10 @@ export default function Command() {
 
       {!!hasData && (
         <>
-          {result.map(({ type, collocationGroup }) => (
+          {collocations.map(({ type, collocationGroup }) => (
             <List.Section key={type} title={type}>
               {collocationGroup.map((group) => (
-                <ListItem key={group.id} group={group} type={type} query={deferredQuery} />
+                <ListItem key={group.id} group={group} type={type} query={query} />
               ))}
             </List.Section>
           ))}
