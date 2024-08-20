@@ -9,9 +9,13 @@ export const CollocationList = ({ collocations }: CollocationList) => {
   const [items, setItems] = useState<string[]>();
 
   useEffect(() => {
-    setTimeout(() => {
+    const id = setTimeout(() => {
       setItems(collocations);
-    }, 1000);
+    }, 500);
+
+    return () => {
+      clearTimeout(id);
+    };
   }, []);
 
   return (
