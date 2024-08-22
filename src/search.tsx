@@ -1,13 +1,13 @@
-import { List, ActionPanel, Action, Icon } from "@raycast/api";
+import { List, ActionPanel, Action, Icon, LaunchProps } from "@raycast/api";
 import { useState } from "react";
 
 import { Collocation } from "./lib/cheerio";
 import { capitalizeWord, remapType } from "./lib/utils";
-import { CollocationList } from "./CollocationList";
 import { useCollocations } from "./hooks/useCollocations";
+import { CollocationList } from "./components/CollocationList";
 
-export default function Command() {
-  const [query, setQuery] = useState("");
+export default function Command(props: LaunchProps) {
+  const [query, setQuery] = useState(props.launchContext?.selectedText ?? "");
   const { collocations, isLoading } = useCollocations(query);
 
   const hasData = collocations.length > 0;
@@ -18,6 +18,7 @@ export default function Command() {
       isLoading={isLoading}
       searchBarPlaceholder="Search for a word"
       throttle
+      searchText={query}
       onSearchTextChange={setQuery}
     >
       {!hasData && <List.EmptyView icon={{ source: "../assets/oxford.png" }} title="Type to begin search" />}

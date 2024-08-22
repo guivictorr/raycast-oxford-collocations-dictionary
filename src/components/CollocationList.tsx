@@ -1,6 +1,6 @@
 import { Action, ActionPanel, List } from "@raycast/api";
 import { useState, useEffect } from "react";
-import { capitalizeWord } from "./lib/utils";
+import { capitalizeWord } from "../lib/utils";
 
 type CollocationList = {
   collocations: string[];
